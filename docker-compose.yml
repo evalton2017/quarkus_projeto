@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+   postgres_cadastro:
+      container_name: postgres_cadastro
+      image: postgres:12.2
+      environment: 
+         POSTGRES_USER: cadastro
+         PORTGRES_PASSWORD: cadastro
+         POSTGRES_HOST_AUTH_METHOD: trust
+      ports:
+         - "5432:5432"

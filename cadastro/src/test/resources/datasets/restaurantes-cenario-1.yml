@@ -1,0 +1,7 @@
+restaurante:
+   - ID: 123
+     Nome: "Primeiro Restaurante"
+     Proprietario: "Dono do Restaurante"
+   - ID: 124
+     Nome: "Segundo Restaurante"
+     Proprietario: "Outro Dono do Restaurante"
