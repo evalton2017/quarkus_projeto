@@ -2,7 +2,8 @@ package dto;
 
 import java.math.BigDecimal;
 
-public class AdicionaPratoDTO {
+@validDTO
+public class AdicionaPratoDTO  implements DTO{
 		 
 	 public String nome;
 	 

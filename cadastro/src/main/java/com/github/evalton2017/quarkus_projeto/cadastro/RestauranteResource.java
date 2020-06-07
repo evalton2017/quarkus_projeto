@@ -1,11 +1,11 @@
 package com.github.evalton2017.quarkus_projeto.cadastro;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
@@ -21,22 +21,49 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import dto.AdicionaPratoDTO;
 import dto.AdicionaRestauranteDTO;
 import dto.AtualizarRestauranteDTO;
-import dto.RestauranteDTO;
+import dto.PratoMappere;
 import dto.RestauranteMappere;
+import infra.ConstraintViolationResponse;
+import io.quarkus.vertx.http.runtime.attribute.ResponseCodeAttribute;
 
 
 @Path("/restaurantes")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Tag(name="Restaurante")
+@RolesAllowed("proprietario")
+@SecurityScheme(securitySchemeName = "projeto-oauth", type= SecuritySchemeType.OAUTH2, 
+flows=@OAuthFlows(password =@OAuthFlow(tokenUrl = "http://localhost:8180/auth/realms/quarkus_projeto/protocol/openid-connect/token")))
+@SecurityRequirement(name="projeto-oauth")
 public class RestauranteResource {
 	
 	@Inject
 	RestauranteMappere restauranteMapper;
 	
+	@Inject
+	PratoMappere pratoMapper;
+	
     @GET
     @Tag(name="Restaurante")
+    @Timed(name="Tempo completo de busca")
+    @SimplyTimed(name="tempo simples de busca")
+    @Counted(name="Quantidade de busca restaurante")
     public List<Restaurante> lista() {
     	Stream<Restaurante> restaurantes = Restaurante.streamAll();
     	return restaurantes.map(r-> restauranteMapper.toRestauranteDTO(r)).collect(Collectors.toList());
@@ -44,7 +71,8 @@ public class RestauranteResource {
     
     @POST
     @Transactional
-    @Tag(name="Restaurante")
+    @APIResponse(responseCode = "201", description = "Restaurante incluido com sucesso")
+    @APIResponse(responseCode = "400", content=@Content(schema=@Schema(allOf = ConstraintViolationResponse.class)))
     public Response salvar(AdicionaRestauranteDTO dto) {
     	Restaurante restaurante = restauranteMapper.toRestaurante(dto);
     	restaurante.persist();
@@ -54,7 +82,6 @@ public class RestauranteResource {
     @PUT
     @Path("{id}")
     @Transactional
-    @Tag(name="Restaurante")
     public void atualizar(@PathParam("id") Long id, AtualizarRestauranteDTO dto) {
     	Optional<Restaurante>restauranteOp = Restaurante.findByIdOptional(id);
     	if(restauranteOp.isEmpty()) {
@@ -71,7 +98,6 @@ public class RestauranteResource {
     @DELETE
     @Path("{id}")
     @Transactional
-    @Tag(name="Restaurante")
     public void delete(@PathParam("id") Long id) {
     	Optional<Restaurante>restauranteOp = Restaurante.findByIdOptional(id);
     
@@ -100,19 +126,14 @@ public class RestauranteResource {
     @POST
     @Path("{idRestaurante}/pratos")
     @Transactional
-    @Tag(name="Prato")
-    public Response adicionarPrato(@PathParam("idRestaurante")Long idRestaurante, Prato dto) {
+    public Response adicionarPrato(@PathParam("idRestaurante")Long idRestaurante, AdicionaPratoDTO dto) {
     	Optional<Restaurante> restauranteOp = Restaurante.findByIdOptional(idRestaurante);
     	if(restauranteOp.isEmpty()) {
     		throw new NotFoundException("Restaurante não existe");
     	}
     	
-    	Prato prato = new Prato();
-    	prato.nome= dto.nome;
-    	prato.descricao = dto.descricao;
-    	
-    	prato.preco = dto.preco;
-    	prato.restaurante = restauranteOp.get();
+    	Prato prato = pratoMapper.toPrato(dto);
+    	prato.restaurante=restauranteOp.get();
     	prato.persist();
     	return Response.status(Status.CREATED).build();
     }
@@ -120,7 +141,6 @@ public class RestauranteResource {
     @PUT
     @Path("{idRestaurante}/pratos/{id}")
     @Transactional
-    @Tag(name="Prato")
     public void atualizar(@PathParam("idRestaurante")Long idRestaurante,@PathParam("id") Long id, Prato dto) {
     	Optional<Restaurante> restauranteOp = Restaurante.findByIdOptional(idRestaurante);
     	if(restauranteOp.isEmpty()) {
@@ -141,7 +161,6 @@ public class RestauranteResource {
     @DELETE
     @Path("{idRestaurante}/pratos/{id}")
     @Transactional
-    @Tag(name="Prato")
     public void delete(@PathParam("idRestaurante")Long idRestaurante,@PathParam("id") Long id, Prato dto) {
     	Optional<Restaurante> restauranteOp = Restaurante.findByIdOptional(idRestaurante);
     	if(restauranteOp.isEmpty()) {
