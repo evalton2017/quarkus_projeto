@@ -1,5 +1,23 @@
 
-l
-java:S1192"XDefine a constant instead of duplicating this literal "Restaurante nÃ£o existe" 4 times.(ôÖƒ‡
-O	java:S125"<This block of commented-out lines of code should be removed.(¸Âı
-T	java:S125"<This block of commented-out lines of code should be removed.(–ÊÜ“ıÿÿÿÿ
+n
+java:S1192q"XDefine a constant instead of duplicating this literal "Restaurante nÃ£o existe" 4 times.(ôÖƒ‡
+Q	java:S125s"<This block of commented-out lines of code should be removed.(¸Âı
+V	java:S125u"<This block of commented-out lines of code should be removed.(–ÊÜ“ıÿÿÿÿ
+€
+java:S3252N"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(üØ©§8í–˜­.
+€
+java:S3252`"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(üØ©§8í–˜­.
+€
+java:S3252o"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(â»‡8í–˜­.
+y
+java:S3252t"WUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "list".(ş³ëâøÿÿÿÿ8í–˜­.
+€
+java:S3252|"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(â»‡8í–˜­.
+
+java:S3252‹"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(â»‡8í–˜­.
+
+java:S3252"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(äñë«8í–˜­.
+
+java:S3252Ÿ"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(â»‡8í–˜­.
+
+java:S3252¤"cUse static access with "io.quarkus.hibernate.orm.panache.PanacheEntityBase" for "findByIdOptional".(äñë«8í–˜­.
