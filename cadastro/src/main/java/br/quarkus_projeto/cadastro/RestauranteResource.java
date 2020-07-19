@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -30,6 +32,8 @@ import br.quarkus_projeto.cadastro.prato.Prato;
 import br.quarkus_projeto.cadastro.prato.PratoDTO;
 import br.quarkus_projeto.cadastro.prato.PratoMapper;
 import infra.ConstraintViolationResponse;
+import io.smallrye.reactive.messaging.annotations.Channel;
+import io.smallrye.reactive.messaging.annotations.Emitter;
 
 
 @Path("/restaurantes")
@@ -51,6 +55,10 @@ public class RestauranteResource {
 	@Inject
 	PratoMapper pratoMapper;
 	
+	@Inject
+	@Channel("restaurantes")
+	Emitter<String> emitter;
+	
     @GET
     @Tag(name="Restaurante")
     @Timed(name="Tempo completo de busca")
@@ -68,6 +76,11 @@ public class RestauranteResource {
     public Response salvar(RestauranteDTO dto) {
     	Restaurante restaurante = restauranteMapper.toEntity(dto);
     	restaurante.persist();
+    	
+    	Jsonb create = JsonbBuilder.create();
+    	String json = create.toJson(restaurante);
+    	emitter.send(json);
+    	
     	return Response.status(Status.CREATED).build();
     }
     
